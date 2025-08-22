@@ -48,9 +48,14 @@ jobs:
           tar -czf "${ARCHIVE_NAME}.tar.gz" "${BINARY_NAME}"
         fi
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}
-        path: |
-          opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}.*
+    - name: Upload to Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Upload the archive to the release
+        ARCHIVE_NAME="opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          gh release upload ${{ github.event.release.tag_name }} "${ARCHIVE_NAME}.zip"
+        else
+          gh release upload ${{ github.event.release.tag_name }} "${ARCHIVE_NAME}.tar.gz"
+        fi
