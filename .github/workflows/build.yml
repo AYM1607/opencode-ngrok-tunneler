@@ -1,0 +1,56 @@
+name: Release Build
+
+on:
+  release:
+    types: [ created ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.5'
+
+    - name: Get dependencies
+      run: go mod download
+
+    - name: Build
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+      run: |
+        # Set binary name with extension for Windows
+        BINARY_NAME="opencode-ngrok-tunneler"
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          BINARY_NAME="${BINARY_NAME}.exe"
+        fi
+
+        # Build the binary
+        go build -v -o "${BINARY_NAME}" .
+
+        # Create archive name
+        ARCHIVE_NAME="opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
+
+        # Create archive
+        if [ "${{ matrix.goos }}" = "windows" ]; then
+          zip "${ARCHIVE_NAME}.zip" "${BINARY_NAME}"
+        else
+          tar -czf "${ARCHIVE_NAME}.tar.gz" "${BINARY_NAME}"
+        fi
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}
+        path: |
+          opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}.*
