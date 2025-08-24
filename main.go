@@ -13,10 +13,10 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
-	"time"
 
+	godigauth "github.com/AYM1607/godig/pkg/auth"
+	"github.com/AYM1607/godig/pkg/tunnel"
 	"github.com/mdp/qrterminal"
-	"golang.ngrok.com/ngrok/v2"
 )
 
 func main() {
@@ -35,7 +35,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to start opencode")
 	}
-	time.Sleep(time.Second * 5)
 
 	link, auth, err := runProxy(ctx, port)
 	if err != nil {
@@ -77,44 +76,23 @@ func serveOpenCode(ctx context.Context, port int) error {
 }
 
 func runProxy(ctx context.Context, port int) (string, string, error) {
-	username, password, err := generateCredentials()
+	apikey, err := godigauth.GetServerKey()
 	if err != nil {
 		return "", "", err
 	}
 
-	agent, err := ngrok.NewAgent(ngrok.WithAuthtoken(os.Getenv("NGROK_AUTHTOKEN")))
-	if err != nil {
-		return "", "", err
-	}
-
-	trafficPolicy := fmt.Sprintf(`
-inbound:
-- name: "basic_auth"
-  actions:
-  - type: "basic-auth"
-    config:
-      credentials:
-      - "%s:%s"
-`, username, password)
-
-	ln, err := agent.Forward(ctx,
-		ngrok.WithUpstream("http://127.0.0.1:"+strconv.FormatInt(int64(port), 10)),
-		ngrok.WithTrafficPolicy(trafficPolicy),
+	cli := tunnel.NewTunnelClient(
+		"godig.xyz:8080",
+		"127.0.01:"+strconv.FormatInt(int64(port), 10),
+		apikey,
 	)
 
-	if err != nil {
-		fmt.Println("Error", err)
-		return "", "", err
-	}
-
 	go func() {
-		<-ln.Done()
-		fmt.Println("Done forwarding")
+		cli.Run(ctx)
+		log.Println("Tunnel exited")
 	}()
 
-	fmt.Println("Endpoint online: forwarding from", ln.URL(), "to", port)
-
-	return ln.URL().String(), fmt.Sprintf("%s:%s", username, password), nil
+	return fmt.Sprintf("https://%s.godig.xyz", cli.TunnelID), cli.Bearer, nil
 }
 
 func getFreePort() (int, error) {
