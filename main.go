@@ -40,7 +40,7 @@ func main() {
 
 	link, auth, err := runProxy(ctx, port)
 	if err != nil {
-		log.Fatal("")
+		log.Fatal(err)
 	}
 	log.Printf("Listening on %q, with auth %q", link, auth)
 	qrterminal.GenerateHalfBlock(fmt.Sprintf(`{"link": "%s", "auth": "%s"}`, link, auth), qrterminal.L, os.Stdout)
@@ -83,11 +83,14 @@ func runProxy(ctx context.Context, port int) (string, string, error) {
 		return "", "", err
 	}
 
-	cli := tunnel.NewTunnelClient(
+	cli, err := tunnel.NewTunnelClient(
 		tunnelServerAddr,
 		localhostAddr+":"+strconv.Itoa(port),
 		apikey,
 	)
+	if err != nil {
+		return "", "", err
+	}
 
 	go func() {
 		cli.Run(ctx)

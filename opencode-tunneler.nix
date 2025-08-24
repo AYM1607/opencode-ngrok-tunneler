@@ -2,11 +2,11 @@
 
 buildGoModule rec {
   pname = "opencode-tunneler";
-  version = "v0.1.0";
+  version = "v0.2.0";
 
   src = ./.;
 
-  vendorHash = "sha256-IszU6eUDZtmUs/wSzLfNEKSb/lMUtKdWqg+sz+aXePU=";
+  vendorHash = "sha256-mDdfhK+hgDtKeoTldREDFXZXPeKc153+hH5Pw+JXKFw=";
 
   meta = with lib; {
     description = "OpenCode tunneler";
