@@ -32,7 +32,7 @@ jobs:
         GOARCH: ${{ matrix.goarch }}
       run: |
         # Set binary name with extension for Windows
-        BINARY_NAME="opencode-ngrok-tunneler"
+        BINARY_NAME="opencode-tunneler"
         if [ "${{ matrix.goos }}" = "windows" ]; then
           BINARY_NAME="${BINARY_NAME}.exe"
         fi
@@ -41,7 +41,7 @@ jobs:
         go build -v -o "${BINARY_NAME}" .
 
         # Create archive name
-        ARCHIVE_NAME="opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
+        ARCHIVE_NAME="opencode-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
 
         # Create archive
         if [ "${{ matrix.goos }}" = "windows" ]; then
@@ -55,7 +55,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # Upload the archive to the release
-        ARCHIVE_NAME="opencode-ngrok-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
+        ARCHIVE_NAME="opencode-tunneler-${{ matrix.goos }}-${{ matrix.goarch }}"
         if [ "${{ matrix.goos }}" = "windows" ]; then
           gh release upload ${{ github.event.release.tag_name }} "${ARCHIVE_NAME}.zip"
         else
