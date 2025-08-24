@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/rand"
-	"encoding/base32"
 	"fmt"
 	"log"
 	"net"
@@ -11,12 +9,16 @@ import (
 	"os/exec"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 
 	godigauth "github.com/AYM1607/godig/pkg/auth"
 	"github.com/AYM1607/godig/pkg/tunnel"
 	"github.com/mdp/qrterminal"
+)
+
+const (
+	tunnelServerAddr = "godig.xyz:8080"
+	localhostAddr    = "127.0.0.1"
 )
 
 func main() {
@@ -28,7 +30,7 @@ func main() {
 
 	port, err := getFreePort()
 	if err != nil {
-		log.Fatal("Failed to get free port", err)
+		log.Fatalf("Failed to get free port: %v", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	err = serveOpenCode(ctx, port)
@@ -54,7 +56,7 @@ func main() {
 }
 
 func serveOpenCode(ctx context.Context, port int) error {
-	cmd := exec.CommandContext(ctx, "opencode", []string{"serve", "--port", strconv.FormatInt(int64(port), 10)}...)
+	cmd := exec.CommandContext(ctx, "opencode", []string{"serve", "--port", strconv.Itoa(port)}...)
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -82,8 +84,8 @@ func runProxy(ctx context.Context, port int) (string, string, error) {
 	}
 
 	cli := tunnel.NewTunnelClient(
-		"godig.xyz:8080",
-		"127.0.01:"+strconv.FormatInt(int64(port), 10),
+		tunnelServerAddr,
+		localhostAddr+":"+strconv.Itoa(port),
 		apikey,
 	)
 
@@ -108,24 +110,4 @@ func getFreePort() (int, error) {
 	defer l.Close()
 
 	return l.Addr().(*net.TCPAddr).Port, nil
-}
-
-func generateCredentials() (string, string, error) {
-	// Generate random bytes for username and password
-	usernameBytes := make([]byte, 5) // 8 chars when base32 encoded
-	passwordBytes := make([]byte, 8) // 13 chars when base32 encoded
-
-	if _, err := rand.Read(usernameBytes); err != nil {
-		return "", "", err
-	}
-
-	if _, err := rand.Read(passwordBytes); err != nil {
-		return "", "", err
-	}
-
-	// Encode to base32 and remove padding
-	username := strings.TrimRight(base32.StdEncoding.EncodeToString(usernameBytes), "=")
-	password := strings.TrimRight(base32.StdEncoding.EncodeToString(passwordBytes), "=")
-
-	return strings.ToLower(username), strings.ToLower(password), nil
 }
