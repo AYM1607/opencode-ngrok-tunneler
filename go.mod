@@ -1,4 +1,4 @@
-module github.com/AYM1607/opencode-ngrok-tunneler
+module github.com/AYM1607/opencode-tunneler
 
 go 1.24.5
 
