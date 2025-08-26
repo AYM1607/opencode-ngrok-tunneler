@@ -13,6 +13,7 @@ import (
 
 	godigauth "github.com/AYM1607/godig/pkg/auth"
 	"github.com/AYM1607/godig/pkg/tunnel"
+	godigtypes "github.com/AYM1607/godig/types"
 	"github.com/mdp/qrterminal"
 )
 
@@ -87,6 +88,7 @@ func runProxy(ctx context.Context, port int) (string, string, error) {
 		tunnelServerAddr,
 		localhostAddr+":"+strconv.Itoa(port),
 		apikey,
+		godigtypes.TunnelClientConfig{PersistConfig: true},
 	)
 	if err != nil {
 		return "", "", err

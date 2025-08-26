@@ -1,5 +1,5 @@
-github.com/AYM1607/godig v0.0.2 h1:dVrONrLLEUK72jendieIgHsMBJP0ruFSAX9GE0N5MqY=
-github.com/AYM1607/godig v0.0.2/go.mod h1:pYRpKCLof5ts81ZNW727saBrPffQ6WFu9fiwl7tnnq0=
+github.com/AYM1607/godig v0.1.0 h1:lE6AtkVcnbn0WeV0mrrkUec/Qnh/PghwqgLsyBPyd/o=
+github.com/AYM1607/godig v0.1.0/go.mod h1:pYRpKCLof5ts81ZNW727saBrPffQ6WFu9fiwl7tnnq0=
 github.com/hashicorp/yamux v0.1.2 h1:XtB8kyFOyHXYVFnwT5C3+Bdo8gArse7j2AQ0DA0Uey8=
 github.com/hashicorp/yamux v0.1.2/go.mod h1:C+zze2n6e/7wshOZep2A70/aQU6QBRWJO/G6FT1wIns=
 github.com/mdp/qrterminal v1.0.1 h1:07+fzVDlPuBlXS8tB0ktTAyf+Lp1j2+2zK3fBOL5b7c=

@@ -3,7 +3,7 @@ module github.com/AYM1607/opencode-tunneler
 go 1.24.5
 
 require (
-	github.com/AYM1607/godig v0.0.2
+	github.com/AYM1607/godig v0.1.0
 	github.com/mdp/qrterminal v1.0.1
 )
 
